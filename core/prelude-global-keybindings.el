@@ -41,14 +41,14 @@
 
 ;; Window switching. (C-x o goes to the next window)
 (global-set-key (kbd "C-x O") (lambda ()
-                                (interactive)
-                                (other-window -1))) ;; back one
+								(interactive)
+								(other-window -1))) ;; back one
 
 ;; Indentation help
 (global-set-key (kbd "C-^") 'crux-top-join-line)
 ;; Start proced in a similar manner to dired
 (unless (eq system-type 'darwin)
-    (global-set-key (kbd "C-x p") 'proced))
+	(global-set-key (kbd "C-x p") 'proced))
 
 ;; Start eshell or switch to it if it's active.
 (global-set-key (kbd "C-x m") 'eshell)
@@ -81,9 +81,9 @@
 
 ;; kill lines backward
 (global-set-key (kbd "C-<backspace>") (lambda ()
-                                        (interactive)
-                                        (kill-line 0)
-                                        (indent-according-to-mode)))
+										(interactive)
+										(kill-line 0)
+										(indent-according-to-mode)))
 
 (global-set-key [remap kill-whole-line] 'crux-kill-whole-line)
 

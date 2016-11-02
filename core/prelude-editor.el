@@ -42,8 +42,9 @@
 ;; indentation width -- eg. c-basic-offset: use that to adjust your
 ;; personal indentation width, while maintaining the style (and
 ;; meaning) of any files you load.
-(setq-default indent-tabs-mode nil)   ;; don't use tabs to indent
-(setq-default tab-width 8)            ;; but maintain correct appearance
+
+;; (setq-default indent-tabs-mode nil)   ;; don't use tabs to indent
+;; (setq-default tab-width 8)            ;; but maintain correct appearance
 
 ;; Newline at end of file
 (setq require-final-newline t)
@@ -53,13 +54,13 @@
 
 ;; store all backup and autosave files in the tmp dir
 (setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
+	  `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
+	  `((".*" ,temporary-file-directory t)))
 
 ;; autosave the undo-tree history
 (setq undo-tree-history-directory-alist
-      `((".*" . ,temporary-file-directory)))
+	  `((".*" . ,temporary-file-directory)))
 (setq undo-tree-auto-save-history t)
 
 ;; revert buffers automatically when underlying files are changed externally
@@ -67,15 +68,15 @@
 
 ;; hippie expand is dabbrev expand on steroids
 (setq hippie-expand-try-functions-list '(try-expand-dabbrev
-                                         try-expand-dabbrev-all-buffers
-                                         try-expand-dabbrev-from-kill
-                                         try-complete-file-name-partially
-                                         try-complete-file-name
-                                         try-expand-all-abbrevs
-                                         try-expand-list
-                                         try-expand-line
-                                         try-complete-lisp-symbol-partially
-                                         try-complete-lisp-symbol))
+										 try-expand-dabbrev-all-buffers
+										 try-expand-dabbrev-from-kill
+										 try-complete-file-name-partially
+										 try-complete-file-name
+										 try-expand-all-abbrevs
+										 try-expand-list
+										 try-expand-line
+										 try-complete-lisp-symbol-partially
+										 try-complete-lisp-symbol))
 
 ;; smart tab behavior - indent or complete
 (setq tab-always-indent 'complete)
@@ -116,29 +117,29 @@
 ;; savehist keeps track of some history
 (require 'savehist)
 (setq savehist-additional-variables
-      ;; search entries
-      '(search-ring regexp-search-ring)
-      ;; save every minute
-      savehist-autosave-interval 60
-      ;; keep the home clean
-      savehist-file (expand-file-name "savehist" prelude-savefile-dir))
+	  ;; search entries
+	  '(search-ring regexp-search-ring)
+	  ;; save every minute
+	  savehist-autosave-interval 60
+	  ;; keep the home clean
+	  savehist-file (expand-file-name "savehist" prelude-savefile-dir))
 (savehist-mode +1)
 
 ;; save recent files
 (require 'recentf)
 (setq recentf-save-file (expand-file-name "recentf" prelude-savefile-dir)
-      recentf-max-saved-items 500
-      recentf-max-menu-items 15
-      ;; disable recentf-cleanup on Emacs start, because it can cause
-      ;; problems with remote files
-      recentf-auto-cleanup 'never)
+	  recentf-max-saved-items 500
+	  recentf-max-menu-items 15
+	  ;; disable recentf-cleanup on Emacs start, because it can cause
+	  ;; problems with remote files
+	  recentf-auto-cleanup 'never)
 
 (defun prelude-recentf-exclude-p (file)
   "A predicate to decide whether to exclude FILE from recentf."
   (let ((file-dir (file-truename (file-name-directory file))))
-    (-any-p (lambda (dir)
-              (string-prefix-p dir file-dir))
-            (mapcar 'file-truename (list prelude-savefile-dir package-user-dir)))))
+	(-any-p (lambda (dir)
+			  (string-prefix-p dir file-dir))
+			(mapcar 'file-truename (list prelude-savefile-dir package-user-dir)))))
 
 (add-to-list 'recentf-exclude 'prelude-recentf-exclude-p)
 
@@ -153,26 +154,26 @@
 (defun prelude-auto-save-command ()
   "Save the current buffer if `prelude-auto-save' is not nil."
   (when (and prelude-auto-save
-             buffer-file-name
-             (buffer-modified-p (current-buffer))
-             (file-writable-p buffer-file-name))
-    (save-buffer)))
+			 buffer-file-name
+			 (buffer-modified-p (current-buffer))
+			 (file-writable-p buffer-file-name))
+	(save-buffer)))
 
 (defmacro advise-commands (advice-name commands class &rest body)
   "Apply advice named ADVICE-NAME to multiple COMMANDS.
 
 The body of the advice is in BODY."
   `(progn
-     ,@(mapcar (lambda (command)
-                 `(defadvice ,command (,class ,(intern (concat (symbol-name command) "-" advice-name)) activate)
-                    ,@body))
-               commands)))
+	 ,@(mapcar (lambda (command)
+				 `(defadvice ,command (,class ,(intern (concat (symbol-name command) "-" advice-name)) activate)
+					,@body))
+			   commands)))
 
 ;; advise all window switching functions
 (advise-commands "auto-save"
-                 (switch-to-buffer other-window windmove-up windmove-down windmove-left windmove-right)
-                 before
-                 (prelude-auto-save-command))
+				 (switch-to-buffer other-window windmove-up windmove-down windmove-left windmove-right)
+				 before
+				 (prelude-auto-save-command))
 
 (add-hook 'mouse-leave-buffer-hook 'prelude-auto-save-command)
 
@@ -182,10 +183,10 @@ The body of the advice is in BODY."
 (defadvice set-buffer-major-mode (after set-major-mode activate compile)
   "Set buffer major mode according to `auto-mode-alist'."
   (let* ((name (buffer-name buffer))
-         (mode (assoc-default name auto-mode-alist 'string-match)))
-    (when (and mode (consp mode))
-      (setq mode (car mode)))
-    (with-current-buffer buffer (if mode (funcall mode)))))
+		 (mode (assoc-default name auto-mode-alist 'string-match)))
+	(when (and mode (consp mode))
+	  (setq mode (car mode)))
+	(with-current-buffer buffer (if mode (funcall mode)))))
 
 ;; highlight the current line
 (global-hl-line-mode +1)
@@ -201,8 +202,8 @@ The body of the advice is in BODY."
   "When called interactively with no active region, kill a single line instead."
   (interactive
    (if mark-active (list (region-beginning) (region-end) rectangle-mark-mode)
-     (list (line-beginning-position)
-           (line-beginning-position 2)))))
+	 (list (line-beginning-position)
+		   (line-beginning-position 2)))))
 
 ;; tramp, for sudo access
 (require 'tramp)
@@ -214,24 +215,24 @@ The body of the advice is in BODY."
 ;; flyspell-mode does spell-checking on the fly as you type
 (require 'flyspell)
 (setq ispell-program-name "aspell" ; use aspell instead of ispell
-      ispell-extra-args '("--sug-mode=ultra"))
+	  ispell-extra-args '("--sug-mode=ultra"))
 
 (defun prelude-enable-flyspell ()
   "Enable command `flyspell-mode' if `prelude-flyspell' is not nil."
   (when (and prelude-flyspell (executable-find ispell-program-name))
-    (flyspell-mode +1)))
+	(flyspell-mode +1)))
 
 (defun prelude-cleanup-maybe ()
   "Invoke `whitespace-cleanup' if `prelude-clean-whitespace-on-save' is not nil."
   (when prelude-clean-whitespace-on-save
-    (whitespace-cleanup)))
+	(whitespace-cleanup)))
 
 (defun prelude-enable-whitespace ()
   "Enable `whitespace-mode' if `prelude-whitespace' is not nil."
   (when prelude-whitespace
-    ;; keep the whitespace decent all the time (in this buffer)
-    (add-hook 'before-save-hook 'prelude-cleanup-maybe nil t)
-    (whitespace-mode +1)))
+	;; keep the whitespace decent all the time (in this buffer)
+	(add-hook 'before-save-hook 'prelude-cleanup-maybe nil t)
+	(whitespace-mode +1)))
 
 (add-hook 'text-mode-hook 'prelude-enable-flyspell)
 (add-hook 'text-mode-hook 'prelude-enable-whitespace)
@@ -253,7 +254,7 @@ The body of the advice is in BODY."
 ;; bookmarks
 (require 'bookmark)
 (setq bookmark-default-file (expand-file-name "bookmarks" prelude-savefile-dir)
-      bookmark-save-flag 1)
+	  bookmark-save-flag 1)
 
 ;; projectile is a project management mode
 (require 'projectile)
@@ -308,10 +309,10 @@ The body of the advice is in BODY."
 (defmacro with-region-or-buffer (func)
   "When called with no active region, call FUNC on current buffer."
   `(defadvice ,func (before with-region-or-buffer activate compile)
-     (interactive
-      (if mark-active
-          (list (region-beginning) (region-end))
-        (list (point-min) (point-max))))))
+	 (interactive
+	  (if mark-active
+		  (list (region-beginning) (region-end))
+		(list (point-min) (point-max))))))
 
 (with-region-or-buffer indent-region)
 (with-region-or-buffer untabify)
@@ -320,24 +321,24 @@ The body of the advice is in BODY."
 (defun yank-advised-indent-function (beg end)
   "Do indentation, as long as the region isn't too large."
   (if (<= (- end beg) prelude-yank-indent-threshold)
-      (indent-region beg end nil)))
+	  (indent-region beg end nil)))
 
 (advise-commands "indent" (yank yank-pop) after
   "If current mode is one of `prelude-yank-indent-modes',
 indent yanked text (with prefix arg don't indent)."
   (if (and (not (ad-get-arg 0))
-           (not (member major-mode prelude-indent-sensitive-modes))
-           (or (derived-mode-p 'prog-mode)
-               (member major-mode prelude-yank-indent-modes)))
-      (let ((transient-mark-mode nil))
-        (yank-advised-indent-function (region-beginning) (region-end)))))
+		   (not (member major-mode prelude-indent-sensitive-modes))
+		   (or (derived-mode-p 'prog-mode)
+			   (member major-mode prelude-yank-indent-modes)))
+	  (let ((transient-mark-mode nil))
+		(yank-advised-indent-function (region-beginning) (region-end)))))
 
 ;; abbrev config
 (add-hook 'text-mode-hook 'abbrev-mode)
 
 ;; make a shell script executable automatically on save
 (add-hook 'after-save-hook
-          'executable-make-buffer-file-executable-if-script-p)
+		  'executable-make-buffer-file-executable-if-script-p)
 
 ;; .zsh file is shell script too
 (add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))
@@ -345,7 +346,7 @@ indent yanked text (with prefix arg don't indent)."
 ;; whitespace-mode config
 (require 'whitespace)
 (setq whitespace-line-column 80) ;; limit line length
-(setq whitespace-style '(face tabs empty trailing lines-tail))
+(setq whitespace-style '(face empty trailing lines-tail indentation space-before-tab))
 
 ;; saner regex syntax
 (require 're-builder)
@@ -355,7 +356,7 @@ indent yanked text (with prefix arg don't indent)."
 (setq eshell-directory-name (expand-file-name "eshell" prelude-savefile-dir))
 
 (setq semanticdb-default-save-directory
-      (expand-file-name "semanticdb" prelude-savefile-dir))
+	  (expand-file-name "semanticdb" prelude-savefile-dir))
 
 ;; Compilation from Emacs
 (defun prelude-colorize-compilation-buffer ()
@@ -363,16 +364,16 @@ indent yanked text (with prefix arg don't indent)."
   (interactive)
   ;; we don't want to mess with child modes such as grep-mode, ack, ag, etc
   (when (eq major-mode 'compilation-mode)
-    (let ((inhibit-read-only t))
-      (ansi-color-apply-on-region (point-min) (point-max)))))
+	(let ((inhibit-read-only t))
+	  (ansi-color-apply-on-region (point-min) (point-max)))))
 
 (require 'compile)
 (setq compilation-ask-about-save nil  ; Just save before compiling
-      compilation-always-kill t       ; Just kill old compile processes before
-                                        ; starting the new one
-      compilation-scroll-output 'first-error ; Automatically scroll to first
-                                        ; error
-      )
+	  compilation-always-kill t       ; Just kill old compile processes before
+										; starting the new one
+	  compilation-scroll-output 'first-error ; Automatically scroll to first
+										; error
+	  )
 
 ;; Colorize output of Compilation Mode, see
 ;; http://stackoverflow.com/a/3072831/355252
@@ -404,16 +405,16 @@ indent yanked text (with prefix arg don't indent)."
 
 (smartrep-define-key global-map "C-c ."
   '(("+" . apply-operation-to-number-at-point)
-    ("-" . apply-operation-to-number-at-point)
-    ("*" . apply-operation-to-number-at-point)
-    ("/" . apply-operation-to-number-at-point)
-    ("\\" . apply-operation-to-number-at-point)
-    ("^" . apply-operation-to-number-at-point)
-    ("<" . apply-operation-to-number-at-point)
-    (">" . apply-operation-to-number-at-point)
-    ("#" . apply-operation-to-number-at-point)
-    ("%" . apply-operation-to-number-at-point)
-    ("'" . operate-on-number-at-point)))
+	("-" . apply-operation-to-number-at-point)
+	("*" . apply-operation-to-number-at-point)
+	("/" . apply-operation-to-number-at-point)
+	("\\" . apply-operation-to-number-at-point)
+	("^" . apply-operation-to-number-at-point)
+	("<" . apply-operation-to-number-at-point)
+	(">" . apply-operation-to-number-at-point)
+	("#" . apply-operation-to-number-at-point)
+	("%" . apply-operation-to-number-at-point)
+	("'" . operate-on-number-at-point)))
 
 (defadvice server-visit-files (before parse-numbers-in-lines (files proc &optional nowait) activate)
   "Open file with emacsclient with cursors positioned on requested line.
@@ -425,14 +426,14 @@ Just call:
 
 and file 'filename' will be opened and cursor set on line 'linenumber'"
   (ad-set-arg 0
-              (mapcar (lambda (fn)
-                        (let ((name (car fn)))
-                          (if (string-match "^\\(.*?\\):\\([0-9]+\\)\\(?::\\([0-9]+\\)\\)?$" name)
-                              (cons
-                               (match-string 1 name)
-                               (cons (string-to-number (match-string 2 name))
-                                     (string-to-number (or (match-string 3 name) ""))))
-                            fn))) files)))
+			  (mapcar (lambda (fn)
+						(let ((name (car fn)))
+						  (if (string-match "^\\(.*?\\):\\([0-9]+\\)\\(?::\\([0-9]+\\)\\)?$" name)
+							  (cons
+							   (match-string 1 name)
+							   (cons (string-to-number (match-string 2 name))
+									 (string-to-number (or (match-string 3 name) ""))))
+							fn))) files)))
 
 (provide 'prelude-editor)
 
